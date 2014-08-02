@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 
 public class Connect4View implements Connect4Listener {
 	Connect4Controller connect4Controller;
-	private int currentPlayerId;
+//	private int currentPlayerId;
 
 	private JFrame frame = new JFrame("Connect 4");
 
@@ -76,7 +76,7 @@ public class Connect4View implements Connect4Listener {
 			buttons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					connect4Controller.placeNextPiece(currentPlayerId, finalI);
+					connect4Controller.placeNextPiece(finalI);
 				}
 			});
 			buttonPanel.add(buttons[i]);
@@ -181,7 +181,6 @@ public class Connect4View implements Connect4Listener {
 	 */
 	@Override
 	public void updateCurrentPlayer(int playerId) {
-		currentPlayerId = playerId;
 		currentPlayerField.setText(playerId + "");
 	}
 

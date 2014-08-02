@@ -63,10 +63,6 @@ public class AlphaBetaPruning {
 	}
 
 	public int findBestMove(int depth, Timer timer) {
-		connect4Model.setCurrentColor(Connect4Constant.COLOR.YELLOW);
-
-		boolean isYellow = connect4Model.getCurrentColor() == Connect4Constant.COLOR.YELLOW;
-
 		// Do iterative deepening (A*), and slow get better heuristic values for the states.
 		List<MoveScore<Integer>> scores = new ArrayList<MoveScore<Integer>>();
 
@@ -89,7 +85,7 @@ public class AlphaBetaPruning {
 					move = moveScore.move;
 					int score = findMoveScore(makeMove(connect4Model, move), move,
 							i, Integer.MIN_VALUE, Integer.MAX_VALUE, timer);
-					if (!isYellow) {
+					if (!connect4Model.isYellow()) {
 						// the scores are from the point of view of the black, so for white
 						// we need to switch.
 						score = -score;
@@ -126,7 +122,6 @@ public class AlphaBetaPruning {
 			return heuristic.getStateValue(connect4Model, row, move);
 		}
 
-		Connect4Constant.COLOR currColor = connect4Model.getCurrentColor();
 		int scoreSum = 0;
 		int count = 0;
 		Iterable<Integer> possibleMoves = heuristic.getAllMoves(connect4Model);
@@ -134,7 +129,7 @@ public class AlphaBetaPruning {
 			count++;
 			int childScore = findMoveScore(makeMove(connect4Model.copy(), possibleMove), possibleMove, depth - 1, alpha, beta, timer);
 
-			if (currColor == Connect4Constant.COLOR.YELLOW) {
+			if (connect4Model.isYellow()) {
 				alpha = Math.max(alpha, childScore);
 				if (beta <= alpha) {
 					break;
@@ -146,7 +141,7 @@ public class AlphaBetaPruning {
 				}
 			}
 		}
-		return currColor == Connect4Constant.COLOR.YELLOW ? alpha : beta;
+		return connect4Model.isYellow() ? alpha : beta;
 	}
 
 	private int findRow(Connect4Model connect4Model, int move) {
@@ -164,14 +159,7 @@ public class AlphaBetaPruning {
 	public Connect4Model makeMove(Connect4Model connect4Model, int move) {
 		Connect4Model model = connect4Model;
 
-		model.placePiece(
-				model.getCurrentColor() == Connect4Constant.COLOR.RED ?
-						Connect4Constant.PLAYER1 : Connect4Constant.AI,
-				move);
-
-		model.setCurrentColor(
-				model.getCurrentColor() == Connect4Constant.COLOR.RED ?
-						Connect4Constant.COLOR.YELLOW : Connect4Constant.COLOR.RED);
+		model.placePiece(model.isRed() ? Connect4Constant.PLAYER1 : Connect4Constant.AI, move);
 
 		return model;
 	}

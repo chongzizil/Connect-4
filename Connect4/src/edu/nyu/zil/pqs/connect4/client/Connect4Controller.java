@@ -11,19 +11,19 @@ import java.util.List;
 public class Connect4Controller {
 	private List<Connect4Listener> connect4Listeners = new ArrayList<Connect4Listener>();
 	private Connect4Model connect4Model;
-	private Connect4Constant.COLOR winner;
+	//	private Connect4Constant.COLOR winner;
 	private Connect4Constant.MODE mode;
 	private Connect4Constant.AI_DIFFICULTY ai_difficulty;
 	private AlphaBetaPruning ai;
 	private Heuristic heuristic;
 
 	private String startModeMessage;
-	private boolean isRunning;
+	//	private boolean isRunning;
 	private int[] playerIDs;
-	private int currentPlayer;
+//	private int currentPlayer;
 
 	public Connect4Controller() {
-		this.connect4Model = Connect4Model.getModel();
+		connect4Model = new Connect4Model();
 	}
 
 	public void setMode(Connect4Constant.MODE mode) {
@@ -58,7 +58,6 @@ public class Connect4Controller {
 	public void play() {
 		connect4Model.initialize();
 		initialize();
-		isRunning = true;
 
 		updateView(Connect4Constant.VIEW_OPERATION.PLAYERS_INFO, playerIDs);
 		updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, Connect4Constant.PLAYER1);
@@ -68,16 +67,12 @@ public class Connect4Controller {
 	public void reset() {
 		connect4Model.initialize();
 		initialize();
-		isRunning = true;
 
 		updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, Connect4Constant.PLAYER1);
 		updateView(Connect4Constant.VIEW_OPERATION.MSG, startModeMessage);
 	}
 
 	public void initialize() {
-		winner = Connect4Constant.COLOR.EMPTY;
-		currentPlayer = Connect4Constant.PLAYER1;
-
 		for (int i = 0; i < Connect4Constant.ROW; i++) {
 			for (int j = 0; j < Connect4Constant.COLUMN; j++) {
 				updateView(Connect4Constant.VIEW_OPERATION.BOARD, Connect4Constant.COLOR.EMPTY, i, j);
@@ -85,22 +80,19 @@ public class Connect4Controller {
 		}
 	}
 
-	public void placeNextPiece(int playerID, int col) {
+	public void placeNextPiece(int col) {
 		int row;
+		int currentPlayer = connect4Model.hasTurn(playerIDs[0]) ? playerIDs[0] : playerIDs[1];
 		Connect4Constant.COLOR color;
 
-		if (currentPlayer != playerID) {
-			throw new IllegalArgumentException("It's not your turn.");
-		}
-
-		if (!isRunning) {
+		if (!connect4Model.isRunning()) {
 			throw new UnsupportedOperationException("The game is already ended.");
 		}
 
-		row = connect4Model.placePiece(playerID, col);
+		row = connect4Model.placePiece(currentPlayer, col);
 
 		if (row != -1) {
-			switch (playerID) {
+			switch (currentPlayer) {
 				case Connect4Constant.PLAYER1:
 					color = Connect4Constant.COLOR.RED;
 					break;
@@ -110,16 +102,15 @@ public class Connect4Controller {
 			}
 
 			updateView(Connect4Constant.VIEW_OPERATION.BOARD, color, row, col);
-
-			currentPlayer = playerIDs[0] == currentPlayer ? playerIDs[1] : playerIDs[0];
 			updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, currentPlayer);
 
 			if (connect4Model.checkHasWon(row, col)) {
-				winner = connect4Model.getCell(row, col);
-				isRunning = false;
-				updateView(Connect4Constant.VIEW_OPERATION.MSG, playerID + " has won!");
+				updateView(Connect4Constant.VIEW_OPERATION.MSG, currentPlayer + " has won!");
 			}
 		}
+
+		currentPlayer = connect4Model.hasTurn(playerIDs[0]) ? playerIDs[0] : playerIDs[1];
+
 		// AI
 		if (mode == Connect4Constant.MODE.AI && currentPlayer == Connect4Constant.AI) {
 			makeMoveByAI();
@@ -132,7 +123,7 @@ public class Connect4Controller {
 		ai = new AlphaBetaPruning(heuristic, connect4Model.copy());
 		DateTimer timer = new DateTimer(100);
 
-		if (!isRunning) {
+		if (!connect4Model.isRunning()) {
 			throw new UnsupportedOperationException("The game is already ended.");
 		}
 
@@ -153,14 +144,12 @@ public class Connect4Controller {
 		row = connect4Model.placePiece(Connect4Constant.AI, col);
 
 		if (row != -1) {
-			currentPlayer = Connect4Constant.PLAYER1;
+			int currentPlayer = connect4Model.hasTurn(playerIDs[0]) ? playerIDs[0] : playerIDs[1];
 
 			updateView(Connect4Constant.VIEW_OPERATION.BOARD, Connect4Constant.COLOR.YELLOW, row, col);
 			updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, currentPlayer);
 
 			if (connect4Model.checkHasWon(row, col)) {
-				winner = connect4Model.getCell(row, col);
-				isRunning = false;
 				updateView(Connect4Constant.VIEW_OPERATION.MSG, currentPlayer + " has won!");
 			}
 		}
@@ -231,5 +220,4 @@ public class Connect4Controller {
 	private void updateView(Connect4Constant.VIEW_OPERATION viewOperation, Connect4Constant.COLOR color, int row, int col) {
 		updateView(viewOperation, "", -1, playerIDs, color, row, col);
 	}
-
 }

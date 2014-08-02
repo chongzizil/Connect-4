@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class Connect4ModelTest {
-	Connect4Model connect4Model = Connect4Model.getModel();
+	Connect4Model connect4Model = new Connect4Model();
 
 	@Before
 	public void setUp() throws Exception {
