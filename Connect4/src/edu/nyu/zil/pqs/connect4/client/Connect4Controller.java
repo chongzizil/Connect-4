@@ -11,16 +11,13 @@ import java.util.List;
 public class Connect4Controller {
 	private List<Connect4Listener> connect4Listeners = new ArrayList<Connect4Listener>();
 	private Connect4Model connect4Model;
-	//	private Connect4Constant.COLOR winner;
 	private Connect4Constant.MODE mode;
 	private Connect4Constant.AI_DIFFICULTY ai_difficulty;
 	private AlphaBetaPruning ai;
 	private Heuristic heuristic;
 
 	private String startModeMessage;
-	//	private boolean isRunning;
 	private int[] playerIDs;
-//	private int currentPlayer;
 
 	public Connect4Controller() {
 		connect4Model = new Connect4Model();
@@ -129,17 +126,17 @@ public class Connect4Controller {
 
 		switch (ai_difficulty) {
 			case EASY:
-				timer = new DateTimer(100);
+				timer = new DateTimer(10000000);
 				break;
 			case MEDIUM:
-				timer = new DateTimer(200);
+				timer = new DateTimer(20000000);
 				break;
 			case DIFFICULT:
-				timer = new DateTimer(300);
+				timer = new DateTimer(30000000);
 				break;
 		}
 
-		col = ai.findBestMove(6, timer);
+		col = ai.findBestMove(10, timer);
 
 		row = connect4Model.placePiece(Connect4Constant.AI, col);
 
@@ -201,6 +198,9 @@ public class Connect4Controller {
 				case PLAYERS_INFO:
 					connect4Listener.updatePlayers(playerIDs, ai_difficulty);
 					break;
+			}
+			if (!connect4Model.isRunning()) {
+				connect4Listener.disableButtons();
 			}
 		}
 	}

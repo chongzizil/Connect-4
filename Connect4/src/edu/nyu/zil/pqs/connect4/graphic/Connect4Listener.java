@@ -25,13 +25,6 @@ public interface Connect4Listener {
 	void updateMessage(String message);
 
 	/**
-	 * Update the difficulty.
-	 *
-	 * @param difficulty
-	 */
-	void updateAIDifficultyStatus(Connect4Constant.AI_DIFFICULTY difficulty);
-
-	/**
 	 * Update the current player info.
 	 *
 	 * @param playerId the current playerID which will be updated int the current player box.
@@ -56,4 +49,6 @@ public interface Connect4Listener {
 	 * @param col   the column of the cell which will be updated.
 	 */
 	void updateBoard(Connect4Constant.COLOR color, int row, int col);
+
+	public void disableButtons();
 }

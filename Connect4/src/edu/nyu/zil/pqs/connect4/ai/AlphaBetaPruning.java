@@ -85,7 +85,8 @@ public class AlphaBetaPruning {
 					move = moveScore.move;
 					int score = findMoveScore(makeMove(connect4Model, move), move,
 							i, Integer.MIN_VALUE, Integer.MAX_VALUE, timer);
-					if (!connect4Model.isYellow()) {
+					//TODO: Check later
+					if (connect4Model.isYellow()) {
 						// the scores are from the point of view of the black, so for white
 						// we need to switch.
 						score = -score;
@@ -127,9 +128,10 @@ public class AlphaBetaPruning {
 		Iterable<Integer> possibleMoves = heuristic.getAllMoves(connect4Model);
 		for (int possibleMove : possibleMoves) {
 			count++;
-			int childScore = findMoveScore(makeMove(connect4Model.copy(), possibleMove), possibleMove, depth - 1, alpha, beta, timer);
+			int childScore = findMoveScore(makeMove(connect4Model, possibleMove), possibleMove, depth - 1, alpha, beta, timer);
 
-			if (connect4Model.isYellow()) {
+			//TODO: Check later
+			if (!connect4Model.isYellow()) {
 				alpha = Math.max(alpha, childScore);
 				if (beta <= alpha) {
 					break;
@@ -146,7 +148,7 @@ public class AlphaBetaPruning {
 
 	private int findRow(Connect4Model connect4Model, int move) {
 		for (int i = 0; i < Connect4Constant.ROW; i++) {
-			if (connect4Model.getCell(0, move) != Connect4Constant.COLOR.EMPTY) {
+			if (connect4Model.getCell(i, move) != Connect4Constant.COLOR.EMPTY) {
 				return i;
 			}
 		}

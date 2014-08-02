@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 
 public class Connect4View implements Connect4Listener {
 	Connect4Controller connect4Controller;
-//	private int currentPlayerId;
 
 	private JFrame frame = new JFrame("Connect 4");
 
@@ -73,6 +72,7 @@ public class Connect4View implements Connect4Listener {
 		for (int i = 0; i < Connect4Constant.COLUMN; i++) {
 			buttons[i] = new JButton(i + "");
 			final int finalI = i;
+			buttons[i].setEnabled(false);
 			buttons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -95,7 +95,7 @@ public class Connect4View implements Connect4Listener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				connect4Controller.reset();
-				initialBoard();
+				initialize();
 			}
 		});
 
@@ -104,6 +104,7 @@ public class Connect4View implements Connect4Listener {
 			public void actionPerformed(ActionEvent e) {
 				connect4Controller.setMode(Connect4Constant.MODE.PLAYER);
 				connect4Controller.play();
+				initialize();
 			}
 		});
 
@@ -113,6 +114,7 @@ public class Connect4View implements Connect4Listener {
 				connect4Controller.setMode(Connect4Constant.MODE.AI);
 				connect4Controller.setAI(Connect4Constant.AI_DIFFICULTY.EASY);
 				connect4Controller.play();
+				initialize();
 			}
 		});
 
@@ -122,6 +124,7 @@ public class Connect4View implements Connect4Listener {
 				connect4Controller.setMode(Connect4Constant.MODE.AI);
 				connect4Controller.setAI(Connect4Constant.AI_DIFFICULTY.MEDIUM);
 				connect4Controller.play();
+				initialize();
 			}
 		});
 
@@ -131,6 +134,7 @@ public class Connect4View implements Connect4Listener {
 				connect4Controller.setMode(Connect4Constant.MODE.AI);
 				connect4Controller.setAI(Connect4Constant.AI_DIFFICULTY.DIFFICULT);
 				connect4Controller.play();
+				initialize();
 			}
 		});
 
@@ -146,11 +150,21 @@ public class Connect4View implements Connect4Listener {
 		this.connect4Controller = connect4Controller;
 	}
 
-	public void initialBoard() {
+	public void initialize() {
+		for (int i = 0; i < Connect4Constant.COLUMN; i++) {
+			buttons[i].setEnabled(true);
+		}
+
 		for (int i = 0; i < Connect4Constant.ROW; i++) {
 			for (int j = 0; j < Connect4Constant.COLUMN; j++) {
 				cells[i][j].setBackground(java.awt.Color.gray);
 			}
+		}
+	}
+
+	public void disableButtons() {
+		for (int i = 0; i < Connect4Constant.COLUMN; i++) {
+			buttons[i].setEnabled(false);
 		}
 	}
 
@@ -162,16 +176,6 @@ public class Connect4View implements Connect4Listener {
 	@Override
 	public void updateMessage(String message) {
 		messageField.setText(message);
-	}
-
-	/**
-	 * Update the difficulty.
-	 *
-	 * @param difficulty
-	 */
-	@Override
-	public void updateAIDifficultyStatus(Connect4Constant.AI_DIFFICULTY difficulty) {
-
 	}
 
 	/**
