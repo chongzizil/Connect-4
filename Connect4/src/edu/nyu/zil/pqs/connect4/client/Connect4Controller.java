@@ -23,6 +23,11 @@ public class Connect4Controller {
 		connect4Model = new Connect4Model();
 	}
 
+	/**
+	 * Set the game mode and initialize the playerIDs.
+	 *
+	 * @param mode the game mode the player chose.
+	 */
 	public void setMode(Connect4Constant.MODE mode) {
 		this.mode = mode;
 		switch (mode) {
@@ -36,6 +41,10 @@ public class Connect4Controller {
 		}
 	}
 
+	/**
+	 * Set the AI difficulty.
+	 * @param ai_difficulty the ai difficulty the player chose.
+	 */
 	public void setAI(Connect4Constant.AI_DIFFICULTY ai_difficulty) {
 		this.ai_difficulty = ai_difficulty;
 
@@ -52,31 +61,21 @@ public class Connect4Controller {
 		}
 	}
 
+	/**
+	 * Initialize the game in order for play.
+	 */
 	public void play() {
 		connect4Model.initialize();
-		initialize();
 
 		updateView(Connect4Constant.VIEW_OPERATION.PLAYERS_INFO, playerIDs);
 		updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, Connect4Constant.PLAYER1);
 		updateView(Connect4Constant.VIEW_OPERATION.MSG, startModeMessage);
 	}
 
-	public void reset() {
-		connect4Model.initialize();
-		initialize();
-
-		updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, Connect4Constant.PLAYER1);
-		updateView(Connect4Constant.VIEW_OPERATION.MSG, startModeMessage);
-	}
-
-	public void initialize() {
-		for (int i = 0; i < Connect4Constant.ROW; i++) {
-			for (int j = 0; j < Connect4Constant.COLUMN; j++) {
-				updateView(Connect4Constant.VIEW_OPERATION.BOARD, Connect4Constant.COLOR.EMPTY, i, j);
-			}
-		}
-	}
-
+	/**
+	 * Place the next piece.
+	 * @param col the column where the piece will be dropped.
+	 */
 	public void placeNextPiece(int col) {
 		int row;
 		int currentPlayer = connect4Model.hasTurn(playerIDs[0]) ? playerIDs[0] : playerIDs[1];
@@ -98,57 +97,62 @@ public class Connect4Controller {
 					break;
 			}
 
+			currentPlayer = connect4Model.hasTurn(playerIDs[0]) ? playerIDs[0] : playerIDs[1];
 			updateView(Connect4Constant.VIEW_OPERATION.BOARD, color, row, col);
 			updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, currentPlayer);
 
 			if (connect4Model.checkHasWon(row, col)) {
-				updateView(Connect4Constant.VIEW_OPERATION.MSG, currentPlayer + " has won!");
+				updateView(Connect4Constant.VIEW_OPERATION.MSG, "Player" + currentPlayer + " has won!");
 			}
 		}
 
-		currentPlayer = connect4Model.hasTurn(playerIDs[0]) ? playerIDs[0] : playerIDs[1];
-
-		// AI
-		if (mode == Connect4Constant.MODE.AI && currentPlayer == Connect4Constant.AI) {
+		// If the second player is AI, then ai will make the next move.
+		if (mode == Connect4Constant.MODE.AI && connect4Model.hasTurn(Connect4Constant.AI)) {
 			makeMoveByAI();
 		}
 	}
 
+	/**
+	 * Ai make the move.
+	 */
 	public void makeMoveByAI() {
-		heuristic = new Heuristic();
 		int col, row;
+		heuristic = new Heuristic();
 		ai = new AlphaBetaPruning(heuristic, connect4Model.copy());
-		DateTimer timer = new DateTimer(100);
+		// Max response time is 500ms, it more than enough.
+		DateTimer timer = new DateTimer(500);
 
 		if (!connect4Model.isRunning()) {
 			throw new UnsupportedOperationException("The game is already ended.");
 		}
 
+		// According to the difficulty, the AI will calculate different depth.
 		switch (ai_difficulty) {
 			case EASY:
-				timer = new DateTimer(10000000);
+				col = ai.findBestMove(1, timer);
 				break;
 			case MEDIUM:
-				timer = new DateTimer(20000000);
+				col = ai.findBestMove(3, timer);
 				break;
 			case DIFFICULT:
-				timer = new DateTimer(30000000);
+				col = ai.findBestMove(6, timer);
 				break;
+			case NIGHTMARE:
+				col = ai.findBestMove(9, timer);
+				break;
+			default:
+				throw new IllegalArgumentException();
 		}
-
-		col = ai.findBestMove(10, timer);
 
 		row = connect4Model.placePiece(Connect4Constant.AI, col);
 
-		if (row != -1) {
-			int currentPlayer = connect4Model.hasTurn(playerIDs[0]) ? playerIDs[0] : playerIDs[1];
+		int currentPlayer = connect4Model.hasTurn(playerIDs[0]) ? playerIDs[0] : playerIDs[1];
 
-			updateView(Connect4Constant.VIEW_OPERATION.BOARD, Connect4Constant.COLOR.YELLOW, row, col);
-			updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, currentPlayer);
+		updateView(Connect4Constant.VIEW_OPERATION.BOARD, Connect4Constant.COLOR.YELLOW, row, col);
+		updateView(Connect4Constant.VIEW_OPERATION.CURR_PLAYER, currentPlayer);
 
-			if (connect4Model.checkHasWon(row, col)) {
-				updateView(Connect4Constant.VIEW_OPERATION.MSG, currentPlayer + " has won!");
-			}
+		if (connect4Model.checkHasWon(row, col)) {
+			updateView(Connect4Constant.VIEW_OPERATION.MSG, "AI has won!");
 		}
 	}
 
@@ -177,9 +181,19 @@ public class Connect4Controller {
 		return connect4Listeners.remove(connect4Listener);
 	}
 
+	/**
+	 * Update the views.
+	 * @param viewOperation the exact operation for the view.
+	 * @param message the message need to be display in the message box.
+	 * @param currPlayerId the current player ID.
+	 * @param playerIDs the playerIDs.
+	 * @param color the color of the newly dropped piece.
+	 * @param row the row of the newly dropped piece.
+	 * @param col the col of the newly dropped piece.
+	 */
 	private void updateView(Connect4Constant.VIEW_OPERATION viewOperation,
 	                        String message,
-	                        int playerId,
+	                        int currPlayerId,
 	                        int[] playerIDs,
 	                        Connect4Constant.COLOR color,
 	                        int row,
@@ -190,7 +204,7 @@ public class Connect4Controller {
 					connect4Listener.updateMessage(message);
 					break;
 				case CURR_PLAYER:
-					connect4Listener.updateCurrentPlayer(playerId);
+					connect4Listener.updateCurrentPlayer(currPlayerId);
 					break;
 				case BOARD:
 					connect4Listener.updateBoard(color, row, col);
@@ -205,18 +219,41 @@ public class Connect4Controller {
 		}
 	}
 
+	/**
+	 * Update the views.
+	 * @param viewOperation the exact operation for the view.
+	 * @param playerIDs the playerIDs.
+	 */
 	private void updateView(Connect4Constant.VIEW_OPERATION viewOperation, int[] playerIDs) {
 		updateView(viewOperation, "", -1, playerIDs, Connect4Constant.COLOR.EMPTY, -1, -1);
 	}
 
+	/**
+	 * Update the views.
+	 * @param viewOperation the exact operation for the view.
+	 * @param message the message need to be display in the message box.
+	 */
 	private void updateView(Connect4Constant.VIEW_OPERATION viewOperation, String message) {
 		updateView(viewOperation, message, -1, playerIDs, Connect4Constant.COLOR.EMPTY, -1, -1);
 	}
 
-	private void updateView(Connect4Constant.VIEW_OPERATION viewOperation, int playerId) {
-		updateView(viewOperation, "", playerId, playerIDs, Connect4Constant.COLOR.EMPTY, -1, -1);
+	/**
+	 * Update the views.
+	 *
+	 * @param viewOperation the exact operation for the view.
+	 * @param currPlayerId  the current player ID.
+	 */
+	private void updateView(Connect4Constant.VIEW_OPERATION viewOperation, int currPlayerId) {
+		updateView(viewOperation, "", currPlayerId, playerIDs, Connect4Constant.COLOR.EMPTY, -1, -1);
 	}
 
+	/**
+	 * Update the views.
+	 * @param viewOperation the exact operation for the view.
+	 * @param color the color of the newly dropped piece.
+	 * @param row the row of the newly dropped piece.
+	 * @param col the col of the newly dropped piece.
+	 */
 	private void updateView(Connect4Constant.VIEW_OPERATION viewOperation, Connect4Constant.COLOR color, int row, int col) {
 		updateView(viewOperation, "", -1, playerIDs, color, row, col);
 	}

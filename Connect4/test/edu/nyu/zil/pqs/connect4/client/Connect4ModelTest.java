@@ -21,7 +21,7 @@ public class Connect4ModelTest {
 
 	// Assume there are still 6 rows.
 	@Test
-	public void testPlaceMoreThanSevenInAColumn() throws Exception {
+	public void testPlaceMoreThanSevenInAColumn() {
 		assertEquals("Should be 5", 5, connect4Model.placePiece(Connect4Constant.PLAYER1, 0));
 		assertEquals("Should be 4", 4, connect4Model.placePiece(Connect4Constant.PLAYER1, 0));
 		assertEquals("Should be 3", 3, connect4Model.placePiece(Connect4Constant.PLAYER1, 0));
@@ -33,7 +33,7 @@ public class Connect4ModelTest {
 	}
 
 	@Test
-	public void testIfPlaceRightColor() throws Exception {
+	public void testIfPlaceRightColor() {
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 3);
 		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
 		connect4Model.placePiece(Connect4Constant.AI, 3);
@@ -46,7 +46,7 @@ public class Connect4ModelTest {
 	}
 
 	@Test
-	public void testCheckHorizontalInRow5() throws Exception {
+	public void testCheckHorizontalInRow5() {
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 0);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 1);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 2);
@@ -55,7 +55,7 @@ public class Connect4ModelTest {
 	}
 
 	@Test
-	public void testCheckHorizontalInRow1() throws Exception {
+	public void testCheckHorizontalInRow1() {
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 0);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 1);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 2);
@@ -68,7 +68,7 @@ public class Connect4ModelTest {
 	}
 
 	@Test
-	public void testCheckVertical() throws Exception {
+	public void testCheckVertical() {
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 0);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 0);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 0);
@@ -77,7 +77,7 @@ public class Connect4ModelTest {
 	}
 
 	@Test
-	public void testCheckDiagonalIncreased() throws Exception {
+	public void testCheckDiagonalIncreased() {
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 0);
 		connect4Model.placePiece(Connect4Constant.PLAYER2, 1);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 1);
@@ -92,7 +92,7 @@ public class Connect4ModelTest {
 	}
 
 	@Test
-	public void testCheckDiagonalDecreased() throws Exception {
+	public void testCheckDiagonalDecreased() {
 		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
 		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
 		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
@@ -104,5 +104,34 @@ public class Connect4ModelTest {
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 5);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 6);
 		assertTrue("Should be true", connect4Model.checkHasWon(0, 6));
+	}
+
+	/**
+	 * |   0 1 2 3 4 5 6 |
+	 * | 0 * * * * * * * |
+	 * | 1 * * * * * R * |
+	 * | 2 * * * * R Y * |
+	 * | 3 * * * R Y Y * |
+	 * | 4 * * R Y Y Y * |
+	 * | 5 * Y R Y Y R * |
+	 */
+	@Test
+	public void testCheckDiagonalRandom() {
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 1);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 2);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 2);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 3);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 4);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 4);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 4);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 4);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 5);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 5);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 5);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 5);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 5);
+		assertTrue("Should be true", connect4Model.checkHasWon(1, 5));
 	}
 }

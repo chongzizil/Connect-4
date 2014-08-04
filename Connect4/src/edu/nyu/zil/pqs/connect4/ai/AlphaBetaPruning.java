@@ -37,6 +37,10 @@ import java.util.List;
  *
  * @author yzibin@google.com (Yoav Zibin)
  */
+
+/**
+ * This is a alpha beta pruning algorithm for the connect 4.
+ */
 public class AlphaBetaPruning {
 	private Connect4Model connect4Model;
 	private Heuristic heuristic;
@@ -76,18 +80,18 @@ public class AlphaBetaPruning {
 
 		try {
 //      long startTime = System.currentTimeMillis();
+
 			for (int i = 0; i < depth; i++) {
 				// Get the fullState
-//        console("Depth " + i + " start's at " + (System.currentTimeMillis() - startTime));
+//				System.out.println(i + ": " + (System.currentTimeMillis() - startTime));
 				for (int j = 0; j < scores.size(); j++) {
 					Integer move = null;
 					MoveScore<Integer> moveScore = scores.get(j);
 					move = moveScore.move;
-					int score = findMoveScore(makeMove(connect4Model, move), move,
+					int score = findMoveScore(makeMove(connect4Model.copy(), move), move,
 							i, Integer.MIN_VALUE, Integer.MAX_VALUE, timer);
-					//TODO: Check later
-					if (connect4Model.isYellow()) {
-						// the scores are from the point of view of the black, so for white
+					if (!connect4Model.isYellow()) {
+						// the scores are from the point of view of the Yellow, so for Red
 						// we need to switch.
 						score = -score;
 					}
@@ -110,28 +114,23 @@ public class AlphaBetaPruning {
 	/**
 	 * If we get a timeout, then the score is invalid.
 	 */
-	private int findMoveScore(final Connect4Model connect4Model, int move,
+	private int findMoveScore(Connect4Model connect4Model, int moveCol,
 	                          int depth, int alpha, int beta, Timer timer) throws TimeoutException {
-		Connect4Model model = connect4Model.copy();
-		int row = findRow(connect4Model, move);
+		int row = findRow(connect4Model, moveCol);
 
 		if (timer.didTimeout()) {
 			throw new TimeoutException();
 		}
 
-		if (depth == 0 || connect4Model.checkHasWon(row, move)) {
-			return heuristic.getStateValue(connect4Model, row, move);
+		if (depth == 0 || connect4Model.checkHasWon(row, moveCol)) {
+			return heuristic.getStateValue(connect4Model, row, moveCol);
 		}
 
-		int scoreSum = 0;
-		int count = 0;
 		Iterable<Integer> possibleMoves = heuristic.getAllMoves(connect4Model);
 		for (int possibleMove : possibleMoves) {
-			count++;
-			int childScore = findMoveScore(makeMove(connect4Model, possibleMove), possibleMove, depth - 1, alpha, beta, timer);
+			int childScore = findMoveScore(makeMove(connect4Model.copy(), possibleMove), possibleMove, depth - 1, alpha, beta, timer);
 
-			//TODO: Check later
-			if (!connect4Model.isYellow()) {
+			if (connect4Model.isYellow()) {
 				alpha = Math.max(alpha, childScore);
 				if (beta <= alpha) {
 					break;
@@ -143,12 +142,20 @@ public class AlphaBetaPruning {
 				}
 			}
 		}
+
 		return connect4Model.isYellow() ? alpha : beta;
 	}
 
-	private int findRow(Connect4Model connect4Model, int move) {
+	/**
+	 * Find the row of the newly dropped piece.
+	 *
+	 * @param connect4Model the connect 4 model.
+	 * @param moveCol       the column of the newly dropped piece.
+	 * @return the row of the newly dropped piece.
+	 */
+	private int findRow(Connect4Model connect4Model, int moveCol) {
 		for (int i = 0; i < Connect4Constant.ROW; i++) {
-			if (connect4Model.getCell(i, move) != Connect4Constant.COLOR.EMPTY) {
+			if (connect4Model.getCell(i, moveCol) != Connect4Constant.COLOR.EMPTY) {
 				return i;
 			}
 		}
@@ -159,10 +166,7 @@ public class AlphaBetaPruning {
 	 * Make the move and return the new state.
 	 */
 	public Connect4Model makeMove(Connect4Model connect4Model, int move) {
-		Connect4Model model = connect4Model;
-
-		model.placePiece(model.isRed() ? Connect4Constant.PLAYER1 : Connect4Constant.AI, move);
-
-		return model;
+		connect4Model.placePiece(connect4Model.isRed() ? Connect4Constant.PLAYER1 : Connect4Constant.AI, move);
+		return connect4Model;
 	}
 }

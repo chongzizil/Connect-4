@@ -1,5 +1,8 @@
 package edu.nyu.zil.pqs.connect4.client;
 
+/**
+ * All constant variables and enums.
+ */
 public class Connect4Constant {
 	public enum VIEW_OPERATION {
 		MSG,
@@ -16,7 +19,8 @@ public class Connect4Constant {
 	public enum AI_DIFFICULTY {
 		EASY,
 		MEDIUM,
-		DIFFICULT
+		DIFFICULT,
+		NIGHTMARE
 	}
 
 	public enum COLOR {

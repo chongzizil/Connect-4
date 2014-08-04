@@ -27,9 +27,9 @@ public interface Connect4Listener {
 	/**
 	 * Update the current player info.
 	 *
-	 * @param playerId the current playerID which will be updated int the current player box.
+	 * @param playerID the current playerID which will be updated int the current player box.
 	 */
-	void updateCurrentPlayer(int playerId);
+	void updateCurrentPlayer(int playerID);
 
 	/**
 	 * Update the players info
@@ -50,5 +50,8 @@ public interface Connect4Listener {
 	 */
 	void updateBoard(Connect4Constant.COLOR color, int row, int col);
 
+	/**
+	 * Disable all the buttons.
+	 */
 	public void disableButtons();
 }

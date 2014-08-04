@@ -11,32 +11,63 @@ import java.awt.event.ActionListener;
 public class Connect4View implements Connect4Listener {
 	Connect4Controller connect4Controller;
 
-	private JFrame frame = new JFrame("Connect 4");
+	private JFrame frame;
+	// Base panel
+	private JPanel jPanel;
 
-	JPanel jPanel = new JPanel();
+	// Info panel, positions at the top of the base panel.
+	// Contains 3 text fields to display the two players name and the current player name.
+	private JPanel infoPanel;
+	private JTextField currentPlayerField;
+	private JTextField player1Field;
+	private JTextField player2Field;
 
-	JPanel infoPanel = new JPanel();
-	JTextField currentPlayerField = new JTextField();
-	JTextField player1Field = new JTextField();
-	JTextField player2Field = new JTextField();
+	// Main panel, positions at the middle of the base panel.
+	// Contains the operation panel (for game operation) and board panel (display the game board)..
+	private JPanel mainPanel;
+	private JPanel operationPanel;
+	private JButton[] buttons;
+	private JPanel boardPanel;
+	private JPanel[][] cells;
 
-	JPanel mainPanel = new JPanel();
-	JPanel buttonPanel = new JPanel();
-	JButton[] buttons = new JButton[Connect4Constant.COLUMN];
-	JPanel boardPanel = new JPanel();
-	JPanel[][] cells = new JPanel[Connect4Constant.ROW][Connect4Constant.COLUMN];
-
-	JPanel bottomPanel = new JPanel();
-	JPanel gameModePanel = new JPanel();
-	JButton vsPlayerButton = new JButton("Player");
-	JButton vsEasyAIButton = new JButton("Easy");
-	JButton vsMediumAIButton = new JButton("Medium");
-	JButton vsDifficultAIButton = new JButton("Difficult");
-	JPanel messagePanel = new JPanel();
-	JTextField messageField = new JTextField();
-	JButton resetButton = new JButton("Reset");
+	// Bottom panel, positions at the bottom of the base panel.
+	// Contains a game mode panel (for choosing game mode) and message panel (display message and
+	// a reset or replay button)
+	private JPanel bottomPanel;
+	private JPanel gameModePanel;
+	private JButton vsPlayerButton;
+	private JPanel messagePanel;
+	private JTextField messageField;
+	private JButton replayButton;
 
 	public Connect4View() {
+		frame = new JFrame("Connect 4");
+
+		jPanel = new JPanel();
+
+		infoPanel = new JPanel();
+		currentPlayerField = new JTextField();
+		currentPlayerField.setEnabled(false);
+		player1Field = new JTextField();
+		player1Field.setEnabled(false);
+		player2Field = new JTextField();
+		player2Field.setEnabled(false);
+
+		mainPanel = new JPanel();
+		operationPanel = new JPanel();
+		buttons = new JButton[Connect4Constant.COLUMN];
+		boardPanel = new JPanel();
+		cells = new JPanel[Connect4Constant.ROW][Connect4Constant.COLUMN];
+
+		bottomPanel = new JPanel();
+		gameModePanel = new JPanel();
+		vsPlayerButton = new JButton("Player");
+
+		messagePanel = new JPanel();
+		messageField = new JTextField();
+		messageField.setEnabled(false);
+		replayButton = new JButton("Replay");
+
 		jPanel.setLayout(new BorderLayout());
 
 		infoPanel.setLayout(new GridLayout(1, 3));
@@ -45,7 +76,7 @@ public class Connect4View implements Connect4Listener {
 		boardPanel.setLayout(new GridLayout(Connect4Constant.ROW, Connect4Constant.COLUMN));
 
 		bottomPanel.setLayout(new GridLayout(2, 1));
-		gameModePanel.setLayout(new GridLayout(1, 4));
+		gameModePanel.setLayout(new GridLayout(1, 5));
 		messagePanel.setLayout(new GridLayout(1, 2));
 
 		jPanel.add(infoPanel, BorderLayout.NORTH);
@@ -56,16 +87,14 @@ public class Connect4View implements Connect4Listener {
 		infoPanel.add(currentPlayerField);
 		infoPanel.add(player2Field);
 
-		mainPanel.add(buttonPanel, BorderLayout.NORTH);
+		mainPanel.add(operationPanel, BorderLayout.NORTH);
 		mainPanel.add(boardPanel, BorderLayout.CENTER);
 
 		gameModePanel.add(vsPlayerButton);
-		gameModePanel.add(vsEasyAIButton);
-		gameModePanel.add(vsMediumAIButton);
-		gameModePanel.add(vsDifficultAIButton);
+
 		messageField.setText("Please choose a mode first!");
 		messagePanel.add(messageField);
-		messagePanel.add(resetButton);
+		messagePanel.add(replayButton);
 		bottomPanel.add(gameModePanel);
 		bottomPanel.add(messagePanel);
 
@@ -79,7 +108,7 @@ public class Connect4View implements Connect4Listener {
 					connect4Controller.placeNextPiece(finalI);
 				}
 			});
-			buttonPanel.add(buttons[i]);
+			operationPanel.add(buttons[i]);
 		}
 
 		for (int i = 0; i < Connect4Constant.ROW; i++) {
@@ -91,10 +120,10 @@ public class Connect4View implements Connect4Listener {
 			}
 		}
 
-		resetButton.addActionListener(new ActionListener() {
+		replayButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				connect4Controller.reset();
+				connect4Controller.play();
 				initialize();
 			}
 		});
@@ -108,38 +137,22 @@ public class Connect4View implements Connect4Listener {
 			}
 		});
 
-		vsEasyAIButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				connect4Controller.setMode(Connect4Constant.MODE.AI);
-				connect4Controller.setAI(Connect4Constant.AI_DIFFICULTY.EASY);
-				connect4Controller.play();
-				initialize();
-			}
-		});
-
-		vsMediumAIButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				connect4Controller.setMode(Connect4Constant.MODE.AI);
-				connect4Controller.setAI(Connect4Constant.AI_DIFFICULTY.MEDIUM);
-				connect4Controller.play();
-				initialize();
-			}
-		});
-
-		vsDifficultAIButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				connect4Controller.setMode(Connect4Constant.MODE.AI);
-				connect4Controller.setAI(Connect4Constant.AI_DIFFICULTY.DIFFICULT);
-				connect4Controller.play();
-				initialize();
-			}
-		});
+		// Add the ai mode buttons
+		for (final Connect4Constant.AI_DIFFICULTY ai_difficulty : Connect4Constant.AI_DIFFICULTY.values()) {
+			JButton tmp = new JButton(ai_difficulty.name());
+			tmp.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					connect4Controller.setMode(Connect4Constant.MODE.AI);
+					connect4Controller.setAI(ai_difficulty);
+					connect4Controller.play();
+					initialize();
+				}
+			});
+			gameModePanel.add(tmp);
+		}
 
 		frame.add(jPanel);
-//        frame.getContentPane().add(jPanel);
 		frame.setSize(500, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -150,6 +163,9 @@ public class Connect4View implements Connect4Listener {
 		this.connect4Controller = connect4Controller;
 	}
 
+	/**
+	 * Initialize the game. Set all button enabled and initialize the game board.
+	 */
 	public void initialize() {
 		for (int i = 0; i < Connect4Constant.COLUMN; i++) {
 			buttons[i].setEnabled(true);
@@ -162,6 +178,9 @@ public class Connect4View implements Connect4Listener {
 		}
 	}
 
+	/**
+	 * Disable all the buttons.
+	 */
 	public void disableButtons() {
 		for (int i = 0; i < Connect4Constant.COLUMN; i++) {
 			buttons[i].setEnabled(false);
@@ -181,11 +200,24 @@ public class Connect4View implements Connect4Listener {
 	/**
 	 * Update the current player info.
 	 *
-	 * @param playerId the current playerID which will be updated int the current player box.
+	 * @param playerID the current playerID which will be updated int the current player box.
 	 */
 	@Override
-	public void updateCurrentPlayer(int playerId) {
-		currentPlayerField.setText(playerId + "");
+	public void updateCurrentPlayer(int playerID) {
+		switch (playerID) {
+			case Connect4Constant.PLAYER1:
+				currentPlayerField.setText("Player " + playerID);
+				break;
+			case Connect4Constant.AI:
+				currentPlayerField.setText("AI");
+				break;
+			case Connect4Constant.PLAYER2:
+				currentPlayerField.setText("Player " + playerID);
+				break;
+			default:
+				throw new IllegalArgumentException("Illegal player ID");
+		}
+
 	}
 
 	/**
