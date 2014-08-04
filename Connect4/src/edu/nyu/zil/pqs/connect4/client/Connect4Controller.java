@@ -129,16 +129,16 @@ public class Connect4Controller {
 		// According to the difficulty, the AI will calculate different depth.
 		switch (ai_difficulty) {
 			case EASY:
-				col = ai.findBestMove(1, timer);
+				col = ai.findBestMove(2, timer);
 				break;
 			case MEDIUM:
 				col = ai.findBestMove(3, timer);
 				break;
 			case DIFFICULT:
-				col = ai.findBestMove(6, timer);
+				col = ai.findBestMove(4, timer);
 				break;
 			case NIGHTMARE:
-				col = ai.findBestMove(9, timer);
+				col = ai.findBestMove(6, timer);
 				break;
 			default:
 				throw new IllegalArgumentException();

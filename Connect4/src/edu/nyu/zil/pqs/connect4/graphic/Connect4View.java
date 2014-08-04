@@ -36,6 +36,7 @@ public class Connect4View implements Connect4Listener {
 	private JPanel bottomPanel;
 	private JPanel gameModePanel;
 	private JButton vsPlayerButton;
+	private JButton[] aiButtons;
 	private JPanel messagePanel;
 	private JTextField messageField;
 	private JButton replayButton;
@@ -67,6 +68,8 @@ public class Connect4View implements Connect4Listener {
 		messageField = new JTextField();
 		messageField.setEnabled(false);
 		replayButton = new JButton("Replay");
+		aiButtons = new JButton[Connect4Constant.AI_DIFFICULTY.values().length];
+		Connect4Constant.AI_DIFFICULTY[] ai_difficulties = Connect4Constant.AI_DIFFICULTY.values();
 
 		jPanel.setLayout(new BorderLayout());
 
@@ -116,6 +119,11 @@ public class Connect4View implements Connect4Listener {
 				cells[i][j] = new JPanel();
 				cells[i][j].setBorder(BorderFactory.createLineBorder(Color.black));
 				cells[i][j].setBackground(java.awt.Color.gray);
+				if (i == Connect4Constant.ROW - 1) {
+					JTextField tmpTextField = new JTextField(j + "");
+					tmpTextField.setEnabled(false);
+					cells[i][j].add(tmpTextField);
+				}
 				boardPanel.add(cells[i][j]);
 			}
 		}
@@ -138,9 +146,11 @@ public class Connect4View implements Connect4Listener {
 		});
 
 		// Add the ai mode buttons
-		for (final Connect4Constant.AI_DIFFICULTY ai_difficulty : Connect4Constant.AI_DIFFICULTY.values()) {
-			JButton tmp = new JButton(ai_difficulty.name());
-			tmp.addActionListener(new ActionListener() {
+		for (int i = 0; i < Connect4Constant.AI_DIFFICULTY.values().length; i++) {
+			final Connect4Constant.AI_DIFFICULTY ai_difficulty = ai_difficulties[i];
+			aiButtons[i] = new JButton(ai_difficulty.name());
+
+			aiButtons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					connect4Controller.setMode(Connect4Constant.MODE.AI);
@@ -149,7 +159,7 @@ public class Connect4View implements Connect4Listener {
 					initialize();
 				}
 			});
-			gameModePanel.add(tmp);
+			gameModePanel.add(aiButtons[i]);
 		}
 
 		frame.add(jPanel);

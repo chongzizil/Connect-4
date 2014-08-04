@@ -178,6 +178,7 @@ public class Connect4Model {
 			}
 		}
 
+		connectNum = 0;
 		for (int i = 0;
 		     i < Connect4Constant.WIN_NUM
 				     && row - Connect4Constant.WIN_NUM >= -1
@@ -193,6 +194,7 @@ public class Connect4Model {
 			}
 		}
 
+		connectNum = 0;
 		for (int i = 0;
 		     i < Connect4Constant.WIN_NUM
 				     && row - Connect4Constant.WIN_NUM >= -1
@@ -208,6 +210,7 @@ public class Connect4Model {
 			}
 		}
 
+		connectNum = 0;
 		for (int i = 0;
 		     i < Connect4Constant.WIN_NUM
 				     && row + Connect4Constant.WIN_NUM <= Connect4Constant.ROW

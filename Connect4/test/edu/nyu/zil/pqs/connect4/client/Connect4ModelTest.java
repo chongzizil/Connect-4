@@ -116,7 +116,7 @@ public class Connect4ModelTest {
 	 * | 5 * Y R Y Y R * |
 	 */
 	@Test
-	public void testCheckDiagonalRandom() {
+	public void testCheckDiagonalRandom1() {
 		connect4Model.placePiece(Connect4Constant.PLAYER2, 1);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 2);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 2);
@@ -133,5 +133,48 @@ public class Connect4ModelTest {
 		connect4Model.placePiece(Connect4Constant.PLAYER2, 5);
 		connect4Model.placePiece(Connect4Constant.PLAYER1, 5);
 		assertTrue("Should be true", connect4Model.checkHasWon(1, 5));
+	}
+
+	/**
+	 * |   0 1 2 3 4 5 6 |
+	 * | 0 * * * * * * * |
+	 * | 1 * * * y * * R |
+	 * | 2 * * Y R * * Y |
+	 * | 3 * Y R R Y * Y |
+	 * | 4 * Y Y Y R R Y |
+	 * | 5 * R R Y R R R |
+	 */
+	@Test
+	public void testCheckDiagonalRandom2() {
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 1);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 1);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 1);
+
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 2);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 2);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 2);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 2);
+
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 3);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 3);
+
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 4);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 4);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 4);
+
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 5);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 5);
+
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 6);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 6);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 6);
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 6);
+		connect4Model.placePiece(Connect4Constant.PLAYER1, 6);
+
+		connect4Model.placePiece(Connect4Constant.PLAYER2, 3);
+
+		assertTrue("Should be true", !connect4Model.checkHasWon(1, 3));
 	}
 }
