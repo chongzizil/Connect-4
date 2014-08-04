@@ -76,6 +76,7 @@ public class Connect4View implements Connect4Listener {
 		infoPanel.setLayout(new GridLayout(1, 3));
 
 		mainPanel.setLayout(new BorderLayout());
+		operationPanel.setLayout(new GridLayout(1, Connect4Constant.COLUMN));
 		boardPanel.setLayout(new GridLayout(Connect4Constant.ROW, Connect4Constant.COLUMN));
 
 		bottomPanel.setLayout(new GridLayout(2, 1));
@@ -119,11 +120,6 @@ public class Connect4View implements Connect4Listener {
 				cells[i][j] = new JPanel();
 				cells[i][j].setBorder(BorderFactory.createLineBorder(Color.black));
 				cells[i][j].setBackground(java.awt.Color.gray);
-				if (i == Connect4Constant.ROW - 1) {
-					JTextField tmpTextField = new JTextField(j + "");
-					tmpTextField.setEnabled(false);
-					cells[i][j].add(tmpTextField);
-				}
 				boardPanel.add(cells[i][j]);
 			}
 		}
